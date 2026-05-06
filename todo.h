@@ -3,6 +3,8 @@
 
 # include <stdio.h>
 # include <stdlib.h>
+# include <string.h>
+
 typedef struct s_task
 {
 	int		id;
@@ -19,7 +21,12 @@ typedef struct s_todo
 }	t_todo;
 
 void	add_task(t_todo *todo);
-//void	del_task(t_todo *todo);
-//void	mark_done(t_todo *todo);
+void	del_task(t_todo *todo);
+void	mark_done(t_todo *todo);
+void	display_list(t_todo *todo);
+void	print_welcome(void);
+void	print_line(void);
+void	save_tasks(t_todo *todo);
+void	load_tasks(t_todo *todo);
 
 #endif

@@ -1,6 +1,6 @@
 #include "todo.h"
 
-static void	print_welcome(void)
+void	print_welcome(void)
 {
 	printf("\n");
 	printf("-------------------\n");
@@ -8,7 +8,7 @@ static void	print_welcome(void)
 	printf("-------------------\n");
 }
 
-static void print_line(void)
+void print_line(void)
 {
 	printf("-------------------\n");
 }
@@ -29,18 +29,23 @@ int main (void)
 	
 	todo.head = NULL;
 	todo.count = 0;
+	load_tasks(&todo);
 	running = 1;
 
 	while (running)
 	{
 		print_welcome();
+		display_list(&todo);
 		print_line();
 
 		print_menu();
 		fgets(input_buffer, 3, stdin);
 		input_choice = atoi(input_buffer);
 		if (input_choice == 4)
+		{
+			save_tasks(&todo);
 			running = 0;
+		}
 		if (!(input_choice >= 1 && input_choice <= 4))
 			printf("Invalid Input!\n");
 		if (input_choice == 1)

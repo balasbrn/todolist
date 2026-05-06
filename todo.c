@@ -1,21 +1,86 @@
 #include "todo.h"
 
-static void	display_list(t_todo *todo)
+void	save_tasks(t_todo *todo)
+{
+	FILE	*file;
+	t_task	*current;
+
+	current = todo->head;
+	file = fopen("todo.text", "w");
+	if(!file)
+		return ;
+	while (current)
+	{
+		fprintf(file, "%d|%d|%d|%s\n", current->id,current->done, current->priority, current->title);
+		current = current->next;
+	}
+	fclose(file);
+}
+
+void	load_tasks(t_todo *todo)
+{
+	FILE	*file;
+	t_task	*new_task;
+	t_task	*current;
+	char	line[256];
+
+	file = fopen("todo.text", "r");
+	if (!file)
+		return ;
+	while (fgets(line, sizeof(line), file))
+	{
+		new_task = malloc(sizeof(t_task));
+		if (!new_task)
+			break ;
+		if (sscanf(line, "%d|%d|%d|%99[^\n]", &new_task->id,
+				&new_task->done, &new_task->priority, new_task->title) != 4)
+		{
+			free(new_task);
+			continue ;
+		}
+		new_task->next = NULL;
+		if (!todo->head)
+			todo->head = new_task;
+		else
+		{
+			current = todo->head;
+			while (current->next)
+				current = current->next;
+			current->next = new_task;
+		}
+		if (new_task->id > todo->count)
+			todo->count = new_task->id;
+	}
+	fclose(file);
+}
+
+void	display_list(t_todo *todo)
 {
 	t_task	*current;
+	int		priority;
 
 	if (!todo->head)
 	{	
 		printf("\nNo Pending Tasks: Phew!\n");
 		return ;
 	}
+	priority = 1;
+	while (priority <= 4)
+	{
+		current = todo->head;
+		while (current)
+		{
+			if (current->priority == priority && current->done == 0)
+				printf("[%d] • %s\n", current->id, current->title);
+			current = current->next;
+		}
+		priority++;
+	}
 	current = todo->head;
 	while (current)
 	{
 		if (current->done == 1)
-			printf("✅ %s \n", current->title);
-		else
-			printf("• %s - Urgency : %d\n", current->title, current->priority);
+			printf("[%d] • %s  ✅\n", current->id, current->title);
 		current = current->next;
 	}
 }
@@ -62,7 +127,6 @@ void	add_task(t_todo *todo)
 	new_task->next = todo->head; // coping todo->head null to new next
 	todo->head = new_task; // then making new next is the todo head
 	todo->count++;
-	display_list(todo);
 }
 
 void	del_task(t_todo *todo)
@@ -75,18 +139,27 @@ void	del_task(t_todo *todo)
 	current = todo->head;
 	previous = NULL;
 
-	printf("\nEnter ID to Delete Task");
+	printf("\nEnter ID to Delete Task : ");
 	fgets(temp_del,100,stdin);
 	del_id = atoi(temp_del);
 	while (current)
 	{
 		if (current->id == del_id)
 		{
-			previous = current;
-			current->next->next = current->next;
+			if (previous == NULL)
+				todo->head = current->next;
+			else
+				previous->next = current->next;
+			free(current);
+			todo->count--;
+			display_list(todo);
+			return ;
 		}
-
+		previous = current;
+		current = current->next;
 	}
+	printf("Incorrect ID!\n");
+	display_list(todo);
 }
 
 void	mark_done(t_todo *todo)
@@ -95,7 +168,7 @@ void	mark_done(t_todo *todo)
 	char	temp_mark_id[100];
 	int		mark_id;
 
-	printf("\nEnter ID to Mark Done : ");
+	printf("\nEnter ID [?] to Mark Done : ");
 	fgets(temp_mark_id,100,stdin);
 	mark_id = atoi(temp_mark_id);
 	current = todo->head;

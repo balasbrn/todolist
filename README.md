@@ -1,55 +1,60 @@
 # Terminal Todo List
 
-Small C side project to practice linked lists, user input, and program structure in a simple terminal app.
+A small terminal-based todo app written in C.
 
-## Current Progress
+You can add tasks, mark tasks as done, delete tasks, and keep your list saved between runs.
 
-- Defined a `t_task` node with:
-  - `id`
-  - `title`
-  - `done`
-  - `priority`
-  - `next`
-- Defined a `t_todo` manager with:
-  - `head`
-  - `count`
-- Built a basic `main` loop that:
-  - prints a welcome header
-  - prints a menu
-  - reads user input with `fgets`
-  - converts input with `atoi`
-  - dispatches actions
-- Implemented the first working feature:
-  - add a task
-  - assign priority
-  - insert at the front of the linked list
-  - print the list after insertion
+## How to Run
 
-## What I Learned
+Open a terminal in the folder that contains the `todo` file.
 
-- `main.c` should coordinate the program, not contain all the logic.
-- A linked list node stores both task data and a `next` pointer.
-- A separate list manager struct makes the app easier to organize.
-- `head` points to the first node in the list.
-- `count` tracks how many tasks are currently stored.
-- `.` is used on a struct variable, `->` is used on a pointer to a struct.
-- `fgets` reads text, so user input should first go into a char buffer.
-- `atoi` converts that text input into an integer choice or priority.
-- `malloc(sizeof(t_task))` allocates memory for one full task node.
-- `char title[100]` is easier for a first version than `char *title`.
-- Arrays are copied with string functions, not assigned directly.
-- `fgets` keeps the newline, so the title string needs pruning before copy.
-- Front insertion works like this:
-  - `new_task->next = todo->head`
-  - `todo->head = new_task`
-  - `todo->count++`
+Run the app:
 
-## Next Steps
+```sh
+./todo
+```
 
-- Validate task priority more strictly (`1` to `5`)
-- Show empty-list message when there are no tasks
-- Implement mark-done
-- Implement delete-task
-- Save tasks to a file
-- Load tasks on startup
-- Add colors for display
+If the terminal says permission is denied, run this once:
+
+```sh
+chmod +x todo
+./todo
+```
+
+## What You Can Do
+
+- Add a new task with a priority from `1` to `4`
+- View pending and completed tasks
+- Mark a task as done using its task ID
+- Delete a task using its task ID
+- Quit the program and save your list automatically
+- Reopen the program and continue from the saved list
+
+## Menu Options
+
+When the app starts, choose one of these options:
+
+```text
+1. Add Task
+2. Mark Done
+3. Delete
+4. Quit
+```
+
+## Saving
+
+Tasks are saved automatically when you quit with option `4`.
+
+The app saves data in:
+
+```text
+todo.text
+```
+
+If `todo.text` does not exist yet, the app creates it when saving.
+
+## Notes
+
+- Task IDs are shown beside pending tasks.
+- Use the task ID when marking a task as done or deleting it.
+- Do not edit `todo.text` manually unless you know the save format.
